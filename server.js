@@ -84,7 +84,7 @@ app.post('/users/login', async (req, res) => {
       const isValidPassword = await bcrypt.compare(password, user.password)
 
       if(isValidPassword) {
-        const token = jwt.sign({email: user.email, id: user._id}, 'secret')
+        const token = jwt.sign({email: user.email, id: user._id}, process.env.JWT_SECRET)
         const userObj = user.toJSON()
         userObj['accessToken'] = token
         res.status(200).json(userObj)
@@ -100,6 +100,32 @@ app.post('/users/login', async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Something is wrong!" });    
   }
+})
+
+//! middleware to authenticate JWT access tokens
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader && authHeader.split(' ')[1]
+  if(token){
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if(err) {
+        res.status(401).json('Unauthorized')
+      } else {
+        req.user = user
+        next()
+      }
+    })
+  } else{
+    res.status(401).json('Unauthorized')
+    return
+  }
+}
+
+//? get user profile
+
+app.get('/profile', authenticateToken, (req, res) => {
+  res.json({user: req.user})
 })
 
 //! get all users
