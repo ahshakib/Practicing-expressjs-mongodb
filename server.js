@@ -12,33 +12,32 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const connectDB = require("./config/db");
+const User = require('./models/User')
 app.use(bodyParser.json());
 const port = process.env.PORT;
 
 //mongodb connection
-const uri = process.env.MONGODB_URI;
-mongoose
-  .connect(uri, { useNewUrlParser: true })
-  .then(() => console.log("Connected!"));
+
+connectDB()
 
 //create schema
-const userSchema = mongoose.Schema(
-  {
-    name: String,
-    email: String,
-    age: Number,
-    password: String,
-  },
-  {
-    timestamps: true,
-  }
-);
+// const userSchema = mongoose.Schema(
+//   {
+//     name: String,
+//     email: String,
+//     age: Number,
+//     password: String,
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
 
-const User = mongoose.model("User", userSchema);
+// const User = mongoose.model("User", userSchema);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
