@@ -8,6 +8,11 @@
  * ! next step: run "npm i --save-dev nodemon"
  */
 
+/**
+ * ! Task manager app:
+ * ? 1/ User can create a task
+ */
+
 require("dotenv").config();
 const express = require("express");
 const app = express();
@@ -24,7 +29,8 @@ connectDB()
 
 //routes
 
-app.use('/api/users', require('./routes/api/users'))
+app.use('/users', require('./routes/api/users'))
+app.use('/tasks', require('./routes/api/tasks'))
 
 
 app.listen(port, () => {
