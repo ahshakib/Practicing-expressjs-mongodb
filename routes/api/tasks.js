@@ -7,6 +7,7 @@ const authenticateToken = require("../../middleware/auth");
 const User = require("../../models/User");
 const Task = require("../../models/Task");
 
+// user create a task
 router.post(
   "/",
   [authenticateToken, [body("title", "Title is required!").notEmpty()]],
@@ -33,6 +34,38 @@ router.post(
   }
 );
 
+// user can see all tasks
+router.get("/", authenticateToken, async (req, res) => {
+  try {
+    const id = req.user.id;
+    const tasks = await Task.find({ userId: id });
+    res.json(tasks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something is wrong!" });
+  }
+});
+
+// user can edit a task
+router.put("/:id", authenticateToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userId = req.user.id;
+    const body = req.body;
+    const task = await Task.findOneAndUpdate({ _id: id, userId }, body, {
+      new: true,
+    });
+    if (task) {
+      res.json(task);
+    } else {
+      res.status(404).json("Task not found");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something is wrong!" });
+  }
+});
+
 router.post(
   "/login",
   [
@@ -57,16 +90,6 @@ router.post(
     }
   }
 );
-
-router.get("/", authenticateToken, async (req, res) => {
-  try {
-    const user = await User.find({});
-    res.json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something is wrong!" });
-  }
-});
 
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
@@ -101,22 +124,6 @@ router.get("/:id", authenticateToken, async (req, res) => {
 });
 
 //! update an user by id
-
-router.put("/:id", authenticateToken, async (req, res) => {
-  try {
-    const id = req.params.id;
-    const body = req.body;
-    const user = await User.findByIdAndUpdate(id, body, { new: true });
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json("404 user not found");
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something is wrong!" });
-  }
-});
 
 //! delete an user by id
 
