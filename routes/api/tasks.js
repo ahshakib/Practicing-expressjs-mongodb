@@ -1,10 +1,13 @@
+/**
+ * Simple Task management app
+ *  this app has login, registration system and user can create task, update task, update task status, user can see all created, user can see one created task and user can delete task
+ * @author Shakib
+ */
+
 const express = require("express");
-const bcrypt = require("bcrypt");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const authenticateToken = require("../../middleware/auth");
-const User = require("../../models/User");
 const Task = require("../../models/Task");
 
 // user create a task
@@ -130,9 +133,9 @@ router.put(
 // user can see one of his created task
 router.get("/:id", authenticateToken, async (req, res) => {
   try {
-    const id = req.params.id
-    const userId = req.user.id
-    const task = await Task.findOne({_id: id, userId: userId})
+    const id = req.params.id;
+    const userId = req.user.id;
+    const task = await Task.findOne({ _id: id, userId: userId });
     if (task) {
       res.json(task);
     } else {
@@ -144,16 +147,15 @@ router.get("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-
 //! user can delete a task
 
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id;
-    const userId = req.user.id
-    const task = await Task.findOneAndDelete({_id: id, userId: userId});
-    if (user) {
-      res.json(user);
+    const userId = req.user.id;
+    const task = await Task.findOneAndDelete({ _id: id, userId: userId });
+    if (task) {
+      res.json(task);
     } else {
       res.status(404).json("Task not found");
     }
