@@ -127,6 +127,23 @@ router.put(
   }
 );
 
+// user can see one of his created task
+router.get("/:id", authenticateToken, async (req, res) => {
+  try {
+    const id = req.params.id
+    const userId = req.user.id
+    const task = await Task.findOne({_id: id, userId: userId})
+    if (task) {
+      res.json(task);
+    } else {
+      res.status(404).json("Task not found");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something is wrong!" });
+  }
+});
+
 router.post(
   "/login",
   [
@@ -258,8 +275,4 @@ function getUsersToken(user, res) {
   console.log("Login Successful!");
 }
 
-function getUserById(req) {
-  const uid = req.params.id;
-  const user = User.findById(uid);
-  return user;
-}
+
